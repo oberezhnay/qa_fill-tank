@@ -7,59 +7,88 @@ describe('fillTank', () => {
     expect(typeof fillTank).toBe('function');
   });
 
-  it('should fill the tank to full capacity if no amount is specified', () => {
+  it('should return nothing', () => {
+    const customer = createNewCustomer();
+
+    expect(fillTank(customer, 50)).toBeUndefined();
+  });
+
+  it('should fill the full tank if the amount is not given', () => {
     const customer = createNewCustomer();
 
     fillTank(customer, 50);
+
     expect(customer.vehicle.fuelRemains).toBe(customer.vehicle.maxTankCapacity);
+    expect(customer.money).toBe(1400);
   });
 
-  it('should fill the tank how it possible if not enough money', () => {
-    const customer = createNewCustomer();
-    const fuelPrice = 100;
-    const customerMoneyBeforePay = customer.money;
-    const customerFuelRemainsBeforePay = customer.vehicle.fuelRemains;
-
-    fillTank(customer, fuelPrice);
-
-    expect(customer.vehicle.fuelRemains).toBe(
-      customerFuelRemainsBeforePay + customerMoneyBeforePay / fuelPrice,
-    );
-  });
-
-  it('should fill the possible tank value', () => {
+  it('should pour only what fits if the amount is greater than the tank space', () => {
     const customer = createNewCustomer();
 
     fillTank(customer, 50, 100);
+
     expect(customer.vehicle.fuelRemains).toBe(customer.vehicle.maxTankCapacity);
+    expect(customer.money).toBe(1400);
   });
 
-  it('should not fill the fuel less then 2 liters', () => {
+  it('should pour only what the customer can pay for when no amount is given', () => {
     const customer = createNewCustomer();
-    const customerFuelRemainsBeforePay = customer.vehicle.fuelRemains;
 
-    fillTank(customer, 100, 1);
-    expect(customer.vehicle.fuelRemains).toBe(customerFuelRemainsBeforePay);
+    fillTank(customer, 100);
+
+    expect(customer.vehicle.fuelRemains).toBe(38);
+    expect(customer.money).toBe(0);
   });
 
-  it('should round fuelRemains', () => {
+  it('should pour only what the customer can pay for when the amount is given', () => {
+    const customer = createNewCustomer();
+
+    fillTank(customer, 200, 30);
+
+    expect(customer.vehicle.fuelRemains).toBe(23);
+    expect(customer.money).toBe(0);
+  });
+
+  it('should round the poured amount down to the tenth part', () => {
     const customer = createNewCustomer();
 
     fillTank(customer, 50, 12.78);
+
     expect(customer.vehicle.fuelRemains).toBe(20.7);
+    expect(customer.money).toBe(2365);
   });
 
-  it('should round fuelRemains to one decimal place', () => {
+  it('should discard the amount digits, not round them to the nearest', () => {
     const customer = createNewCustomer();
 
-    fillTank(customer, 50, 12.7);
+    fillTank(customer, 50, 12.75);
+
     expect(customer.vehicle.fuelRemains).toBe(20.7);
   });
 
-  it('should round price', () => {
+  it('should not pour at all if the poured amount is less than 2 liters', () => {
+    const customer = createNewCustomer();
+
+    fillTank(customer, 100, 1);
+
+    expect(customer.vehicle.fuelRemains).toBe(8);
+    expect(customer.money).toBe(3000);
+  });
+
+  it('should pour when the amount is exactly 2 liters', () => {
+    const customer = createNewCustomer();
+
+    fillTank(customer, 10, 2);
+
+    expect(customer.vehicle.fuelRemains).toBe(10);
+    expect(customer.money).toBe(2980);
+  });
+
+  it('should round the price to the nearest hundredth part', () => {
     const customer = createNewCustomer();
 
     fillTank(customer, 2.345, 2.1);
+
     expect(customer.money).toBe(2995.08);
   });
 });
@@ -71,5 +100,5 @@ function createNewCustomer() {
       maxTankCapacity: 40,
       fuelRemains: 8,
     },
-  }
+  };
 }
