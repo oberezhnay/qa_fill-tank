@@ -22,7 +22,7 @@ describe('fillTank', () => {
     expect(customer.money).toBe(1400);
   });
 
-  it('should pour only what fits if the amount is greater than the tank space', () => {
+  it('should pour only what fits', () => {
     const customer = createNewCustomer();
 
     fillTank(customer, 50, 100);
@@ -31,7 +31,7 @@ describe('fillTank', () => {
     expect(customer.money).toBe(1400);
   });
 
-  it('should pour only what the customer can pay for when no amount is given', () => {
+  it('should pour only what the customer can pay for when no amount', () => {
     const customer = createNewCustomer();
 
     fillTank(customer, 100);
@@ -40,7 +40,7 @@ describe('fillTank', () => {
     expect(customer.money).toBe(0);
   });
 
-  it('should pour only what the customer can pay for when the amount is given', () => {
+  it('should pour what the customer can pay when amount is given', () => {
     const customer = createNewCustomer();
 
     fillTank(customer, 200, 30);
@@ -66,7 +66,7 @@ describe('fillTank', () => {
     expect(customer.vehicle.fuelRemains).toBe(20.7);
   });
 
-  it('should not pour at all if the poured amount is less than 2 liters', () => {
+  it('should not pour at all if the poured amount is less than 2 l', () => {
     const customer = createNewCustomer();
 
     fillTank(customer, 100, 1);
